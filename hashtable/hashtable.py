@@ -21,8 +21,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        self.capacity = capacity
+        self.storage = [None] * capacity
 
     def get_num_slots(self):
         """
@@ -34,7 +34,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -43,8 +43,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        full_buckets = sum([x for x in self.storage if x])
+        return self.capacity / full_buckets
 
     def fnv1(self, key):
         """
