@@ -89,9 +89,9 @@ class HashTable:
         self.storage[hashed_index] = value
         self.keys[hashed_index] = key
 
-        if self.get_load_factor() > 0.7:
-            new_capacity = self.capacity * 2
-            self.resize(new_capacity)
+        # if self.get_load_factor() > 0.7:
+        #     new_capacity = self.capacity * 2
+        #     self.resize(new_capacity)
 
     def delete(self, key):
         """
@@ -128,15 +128,15 @@ class HashTable:
 
         Implement this.
         """
-        new_storage = [None] * new_capacity
-        new_keys = [None] * new_capacity
-        for key in [x for x in self.keys if x]:
-            hashed_index = self.hash_index(key)
-            new_index = self.djb2(key) % new_capacity
-            new_storage[new_index] = self.storage[hashed_index]
-            new_keys[new_index] = key
-        self.storage = new_storage
-        self.keys = new_keys
+        # new_storage = [None] * new_capacity
+        # new_keys = [None] * new_capacity
+        # for key in [x for x in self.keys if x]:
+        #     hashed_index = self.hash_index(key)
+        #     new_index = self.djb2(key) % new_capacity
+        #     new_storage[new_index] = self.storage[hashed_index]
+        #     new_keys[new_index] = key
+        # self.storage = new_storage
+        # self.keys = new_keys
 
 
 if __name__ == "__main__":
