@@ -52,7 +52,7 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
-
+        pass
         # Your code here
 
 
@@ -62,8 +62,10 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
-
+        hashed = 5381
+        for char in key:
+            hashed = (hashed * 33) + ord(char)
+        return hashed
 
     def hash_index(self, key):
         """
