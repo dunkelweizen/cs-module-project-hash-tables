@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.storage = [None] * capacity
+        self.keys = [None] * capacity
 
     def get_num_slots(self):
         """
@@ -83,7 +84,9 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hashed_index = self.hash_index(key)
+        self.storage[hashed_index] = value
+        self.keys[hashed_index] = key
 
 
     def delete(self, key):
@@ -94,7 +97,11 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hashed_index = self.hash_index(key)
+        if self.storage[hashed_index]:
+            self.storage[hashed_index] = None
+        else:
+            print("That key is not in the table!")
 
 
     def get(self, key):
@@ -105,7 +112,10 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hashed_index = self.hash_index(key)
+        value = self.storage[hashed_index]
+        # will already return None if no value at this index, since self.storage was initialized with None
+        return value
 
 
     def resize(self, new_capacity):
@@ -115,7 +125,18 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        new_storage = [None] * new_capacity
+        new_keys = [None] * new_capacity
+        for key in self.keys:
+            hashed_index = self.hash_index(key)
+            new_index = self.djb2(key) % new_capacity
+            new_storage[new_index] = self.storage[hashed_index]
+            new_keys[new_index] = key
+        self.storage = new_storage
+        self.keys = new_keys
+
+
+
 
 
 
