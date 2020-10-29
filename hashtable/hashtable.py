@@ -2,6 +2,7 @@ class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -35,8 +36,7 @@ class HashTable:
 
         Implement this.
         """
-        return self.capacity
-
+        return len(self.storage)
 
     def get_load_factor(self):
         """
@@ -44,7 +44,9 @@ class HashTable:
 
         Implement this.
         """
-        full_buckets = sum([x for x in self.storage if x])
+        full_buckets = sum([1 for x in self.storage if x])
+        if full_buckets == 0:
+            return 0
         return self.capacity / full_buckets
 
     def fnv1(self, key):
@@ -55,7 +57,6 @@ class HashTable:
         """
         pass
         # Your code here
-
 
     def djb2(self, key):
         """
@@ -73,7 +74,7 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+        # return self.fnv1(key) % self.capacity
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -88,6 +89,9 @@ class HashTable:
         self.storage[hashed_index] = value
         self.keys[hashed_index] = key
 
+        if self.get_load_factor() > 0.7:
+            new_capacity = self.capacity * 2
+            self.resize(new_capacity)
 
     def delete(self, key):
         """
@@ -100,9 +104,9 @@ class HashTable:
         hashed_index = self.hash_index(key)
         if self.storage[hashed_index]:
             self.storage[hashed_index] = None
+            self.keys[hashed_index] = None
         else:
             print("That key is not in the table!")
-
 
     def get(self, key):
         """
@@ -117,7 +121,6 @@ class HashTable:
         # will already return None if no value at this index, since self.storage was initialized with None
         return value
 
-
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
@@ -127,17 +130,13 @@ class HashTable:
         """
         new_storage = [None] * new_capacity
         new_keys = [None] * new_capacity
-        for key in self.keys:
+        for key in [x for x in self.keys if x]:
             hashed_index = self.hash_index(key)
             new_index = self.djb2(key) % new_capacity
             new_storage[new_index] = self.storage[hashed_index]
             new_keys[new_index] = key
         self.storage = new_storage
         self.keys = new_keys
-
-
-
-
 
 
 if __name__ == "__main__":
