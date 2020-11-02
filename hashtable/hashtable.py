@@ -24,7 +24,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.storage = [None] * capacity
-        self.keys = [None] * capacity
+        self.load = 0
 
     def get_num_slots(self):
         """
@@ -86,12 +86,16 @@ class HashTable:
         Implement this.
         """
         hashed_index = self.hash_index(key)
-        self.storage[hashed_index] = value
-        self.keys[hashed_index] = key
-
-        # if self.get_load_factor() > 0.7:
-        #     new_capacity = self.capacity * 2
-        #     self.resize(new_capacity)
+        new_entry = HashTableEntry(key,value)
+        if self.storage[hashed_index]:
+            new_next = self.storage[hashed_index]
+            self.storage[hashed_index] = new_entry
+            self.storage[hashed_index].next = new_next
+        else:
+            self.storage[hashed_index] = new_entry
+        if self.get_load_factor() > 0.7:
+            new_capacity = self.capacity * 2
+            self.resize(new_capacity)
 
     def delete(self, key):
         """
@@ -102,10 +106,29 @@ class HashTable:
         Implement this.
         """
         hashed_index = self.hash_index(key)
-        if self.storage[hashed_index]:
-            self.storage[hashed_index] = None
-            self.keys[hashed_index] = None
-        else:
+        key_found = False
+        if self.storage[hashed_index] is not None:
+            pointer = self.storage[hashed_index]
+            if pointer.key == key:
+                key_found = True
+                pointer.key = None
+                return
+            if pointer.next:
+                if pointer.next.key == key:
+                    key_found = True
+                    pointer.next.key = None
+                    return
+                while pointer.next.next:
+                    if pointer.next.key == key:
+                        key_found = True
+                        if pointer.next.next:
+                            new_next = pointer.next.next
+                            pointer.next = new_next
+                        else:
+                            pointer.next = None
+                        break
+                    pointer = self.storage[hashed_index].next
+        if not key_found:
             print("That key is not in the table!")
 
     def get(self, key):
@@ -117,9 +140,18 @@ class HashTable:
         Implement this.
         """
         hashed_index = self.hash_index(key)
-        value = self.storage[hashed_index]
-        # will already return None if no value at this index, since self.storage was initialized with None
-        return value
+        if self.storage[hashed_index] is not None:
+            pointer = self.storage[hashed_index]
+            if pointer.key == key:
+                return pointer.value
+            while pointer.next:
+                if pointer.key == key:
+                    return pointer.value
+                else:
+                    pointer = pointer.next
+            if pointer.key == key:
+                return pointer.value
+        return None
 
     def resize(self, new_capacity):
         """
@@ -128,16 +160,37 @@ class HashTable:
 
         Implement this.
         """
-        # new_storage = [None] * new_capacity
-        # new_keys = [None] * new_capacity
-        # for key in [x for x in self.keys if x]:
-        #     hashed_index = self.hash_index(key)
-        #     new_index = self.djb2(key) % new_capacity
-        #     new_storage[new_index] = self.storage[hashed_index]
-        #     new_keys[new_index] = key
-        # self.storage = new_storage
-        # self.keys = new_keys
+        new_storage = [None] * new_capacity
+        for entry in self.storage:
+            if entry is not None:
+                if entry.next is not None:
+                    pointer = entry
+                    while pointer.next:
+                        new_index = self.djb2(pointer.key) % new_capacity
+                        if new_storage[new_index] is not None:
+                            new_next = new_storage[new_index]
+                            new_storage[new_index] = HashTableEntry(pointer.key, pointer.value)
+                            new_storage[new_index].next = new_next
+                        else:
+                            new_storage[new_index] = HashTableEntry(pointer.key, pointer.value)
+                        pointer = pointer.next
+                    new_index = self.djb2(pointer.key) % new_capacity
+                    if new_storage[new_index] is not None:
+                        new_next = new_storage[new_index]
+                        new_storage[new_index] = HashTableEntry(pointer.key, pointer.value)
+                        new_storage[new_index].next = new_next
+                    else:
+                        new_storage[new_index] = HashTableEntry(pointer.key, pointer.value)
 
+                else:
+                    new_index = self.djb2(entry.key) % new_capacity
+                    if new_storage[new_index] is not None:
+                        new_next = new_storage[new_index]
+                        new_storage[new_index] = HashTableEntry(pointer.key, pointer.value)
+                        new_storage[new_index].next = new_next
+                    else:
+                        new_storage[new_index] = HashTableEntry(entry.key, entry.value)
+        self.storage = new_storage
 
 if __name__ == "__main__":
     ht = HashTable(8)
