@@ -1,5 +1,20 @@
+forbidden_symbols = '" : ; , . - + = / \ | [ ] { } ( ) * ^ &'.split()
 def word_count(s):
-    # Your code here
+    words = s.split()
+    words = [word.lower() for word in words]
+    word_dict = {}
+    for word in words:
+        if all(char in forbidden_symbols for char in word):
+            continue
+        if not all(char.isalpha() for char in word):
+            chars = [char for char in word if char not in forbidden_symbols]
+            word = ''.join(chars)
+        if word in word_dict.keys():
+            word_dict[word] += 1
+        else:
+            word_dict[word] = 1
+    return word_dict
+
 
 
 
